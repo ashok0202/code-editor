@@ -1,0 +1,172 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  username      String?   @unique
+  role          String?   @default("user")
+  passwordHash  String?
+  emailVerified DateTime?
+  image         String?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+
+   isPro        Boolean @default(false)
+   proSince     Int?
+
+  codeExecutions CodeExecution[]
+  snippets       Snippet[]
+  comments       SnippetComment[]
+  stars          Star[]
+}
+
+model Account {
+  id                 String    @id @default(cuid())
+  userId             String
+
+  providerType       String
+  providerId         String
+  providerAccountId  String
+
+  refreshToken       String?
+  accessToken        String?
+  accessTokenExpires DateTime?
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user User @relation(fields: [userId],references: [id],onDelete: Cascade)
+
+  @@unique([providerId, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+
+  expires      DateTime
+  sessionToken String   @unique
+  accessToken  String   @unique
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId],references: [id],onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationRequest {
+  id         String   @id @default(cuid())
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([identifier, token])
+}
+
+
+// ============================================================
+// CODE EXECUTIONS
+// ============================================================
+
+model CodeExecution {
+  id        String   @id @default(cuid())
+
+  userId    String
+  language  String
+  code      String
+
+  output    String?
+  error     String?
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId],references: [id],onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Snippet {
+  id        String   @id @default(cuid())
+
+  userId    String
+  title     String
+  language  String
+  code      String
+
+  // Stored for easy access/display
+  userName  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User      @relation(fields: [userId],references: [id],onDelete: Cascade )
+
+  comments SnippetComment[]
+  stars    Star[]
+
+  @@index([userId])
+}
+
+model SnippetComment {
+  id        String   @id @default(cuid())
+
+  snippetId String
+  userId    String
+  userName  String
+
+  // HTML content
+  content   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  snippet Snippet @relation(fields: [snippetId], references: [id],onDelete: Cascade)
+
+  user User @relation(fields: [userId],references: [id],onDelete: Cascade)
+
+  @@index([snippetId])
+  @@index([userId])
+}
+
+model Star {
+  id        String   @id @default(cuid())
+
+  userId    String
+  snippetId String
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId],references: [id],onDelete: Cascade)
+
+  snippet Snippet @relation( fields: [snippetId],references: [id],onDelete: Cascade)
+
+  // A user can star a snippet only once
+  @@unique([userId, snippetId])
+
+  @@index([userId])
+  @@index([snippetId])
+}
