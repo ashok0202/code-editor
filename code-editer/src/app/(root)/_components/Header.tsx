@@ -1,11 +1,10 @@
 import { Blocks, Code2, Sparkles } from "lucide-react";
 import Link from "next/link";
-import React from "react";
-import HeaderProfileBtn from "./HeaderProfileBtn";
 import LanguageSelector from "./LanguageSelector";
 import RunButton from "./RunButton";
 import ThemeSelector from "./ThemeSelector";
 import { getAuthsession } from "@/lib/auth";
+import HeaderProfileBtn from "@/components/HeaderProfileBtn";
 
 const Header = async () => {
   const session = await getAuthsession();

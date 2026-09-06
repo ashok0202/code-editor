@@ -93,7 +93,7 @@ const LanguageSelector: React.FC<{ hasAccess: boolean }> = ({ hasAccess }) => {
               </p>
             </div>
 
-            <div className="max-h-70 overflow-y-auto overflow-x-hidden">
+            <div className="max-h-70 overflow-y-auto overflow-x-hidden custom-scrollbar">
               {Object.values(LANGUAGE_CONFIG).map((lang, index) => {
                 const isLocked = !hasAccess && lang.id !== "javascript";
 

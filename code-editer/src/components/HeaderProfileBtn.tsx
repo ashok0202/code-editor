@@ -1,13 +1,23 @@
+"use client";
+
 import UserModel from "@/components/UserModel";
 import React from "react";
 import Link from "next/link";
 import { Session } from "next-auth";
+import { useSession } from "next-auth/react";
 
 interface HeaderProfileBtnProps {
-  session: Session | null;
+  session?: Session | null;
 }
 
-const HeaderProfileBtn: React.FC<HeaderProfileBtnProps> = ({ session }) => {
+const HeaderProfileBtn: React.FC<HeaderProfileBtnProps> = ({ session: initialSession }) => {
+  const { data: clientSession, status } = useSession();
+  const session = initialSession !== undefined ? initialSession : clientSession;
+
+  if (status === "loading" && session === undefined) {
+    return <div className="w-8 h-8 rounded-full bg-gray-800 animate-pulse" />;
+  }
+
   if (!session) {
     return (
       <Link
@@ -27,3 +37,4 @@ const HeaderProfileBtn: React.FC<HeaderProfileBtnProps> = ({ session }) => {
 };
 
 export default HeaderProfileBtn;
+

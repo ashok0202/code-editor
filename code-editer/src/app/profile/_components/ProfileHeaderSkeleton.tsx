@@ -1,60 +1,58 @@
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ProfileHeaderSkeleton = () => {
- return (
-    <div
-      className="relative mb-8 bg-linear-to-br from-[#12121a] to-[#1a1a2e] rounded-2xl p-8 border
-     border-gray-800/50 overflow-hidden"
-    >
-      <div className="absolute inset-0 bg-grid-white/[0.02] bg-size-[32px]" />
-      <div className="relative flex items-center gap-8">
-        {/* Avatar Skeleton */}
-        <div className="relative">
-          <div className="absolute inset-0 bg-linear-to-r from-blue-500/20 to-purple-600/20 rounded-full blur-xl" />
-          <div className="w-24 h-24 rounded-full bg-gray-800/80 animate-pulse relative z-10 border-4 border-gray-800/50" />
-          <div
-            className="absolute -top-2 -right-2 w-8 h-8 bg-linear-to-r from-purple-500/50 
-          to-purple-600/50 rounded-full z-20 animate-pulse"
-          />
+  return (
+    <div className="relative mb-8 rounded-3xl bg-[#101018]/90 border border-gray-800/60 p-6 sm:p-8 overflow-hidden shadow-2xl">
+      <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-8 border-b border-gray-800/60">
+        <div className="flex items-center gap-6">
+          {/* Avatar Skeleton */}
+          <div className="relative">
+            <Skeleton className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gray-800/80 border-4 border-gray-800/50" />
+          </div>
+
+          {/* User Meta Skeleton */}
+          <div className="space-y-3">
+            <Skeleton className="h-8 w-48 bg-gray-800/80 rounded-lg" />
+            <Skeleton className="h-4 w-36 bg-gray-800/60 rounded" />
+            <Skeleton className="h-3 w-28 bg-gray-800/40 rounded" />
+          </div>
         </div>
 
-        {/* User Info Skeleton */}
-        <div className="space-y-3">
-          <div className="h-8 w-48 bg-gray-800/80 rounded animate-pulse" />
-          <div className="h-5 w-32 bg-gray-800/80 rounded animate-pulse" />
+        {/* Buttons Skeleton */}
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <Skeleton className="h-10 w-32 bg-gray-800/80 rounded-xl flex-1 md:flex-none" />
+          <Skeleton className="h-10 w-32 bg-blue-900/40 rounded-xl flex-1 md:flex-none" />
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+      {/* Language Bar Skeleton */}
+      <div className="mt-6 space-y-2">
+        <Skeleton className="h-3 w-36 bg-gray-800/60 rounded" />
+        <Skeleton className="h-2.5 w-full bg-gray-800/80 rounded-full" />
+      </div>
+
+      {/* Stats Grid Skeleton */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-6">
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="group relative p-4 rounded-xl bg-gray-800/20 border border-gray-800/50 overflow-hidden"
+            className="p-5 rounded-2xl bg-[#13131f]/80 border border-gray-800/60 space-y-3"
           >
-            <div className="absolute inset-0 bg-linear-to-br opacity-5" />
-            <div className="relative space-y-4">
-              {/* Stat Header */}
-              <div className="flex items-start justify-between">
-                <div className="space-y-2">
-                  <div className="h-4 w-24 bg-gray-800/80 rounded animate-pulse" />
-                  <div className="h-8 w-16 bg-gray-800/80 rounded animate-pulse" />
-                  <div className="h-4 w-32 bg-gray-800/80 rounded animate-pulse" />
-                </div>
-                <div className="w-10 h-10 rounded-xl bg-gray-800/80 animate-pulse" />
+            <div className="flex items-start justify-between">
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-20 bg-gray-800/80 rounded" />
+                <Skeleton className="h-8 w-16 bg-gray-800/80 rounded" />
               </div>
-
-              {/* Stat Footer */}
-              <div className="pt-4 border-t border-gray-800/50 flex items-center gap-2">
-                <div className="h-4 w-4 bg-gray-800/80 rounded animate-pulse" />
-                <div className="h-4 w-20 bg-gray-800/80 rounded animate-pulse" />
-                <div className="h-4 w-16 bg-gray-800/80 rounded animate-pulse" />
-              </div>
+              <Skeleton className="w-11 h-11 rounded-2xl bg-gray-800/80" />
+            </div>
+            <div className="pt-3 border-t border-gray-800/60">
+              <Skeleton className="h-4 w-32 bg-gray-800/40 rounded" />
             </div>
           </div>
         ))}
       </div>
     </div>
   );
-}
+};
 
-export default ProfileHeaderSkeleton
+export default ProfileHeaderSkeleton;

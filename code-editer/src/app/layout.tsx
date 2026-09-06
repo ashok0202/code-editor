@@ -41,7 +41,7 @@ export default function RootLayout({
           {children}
 
           <Footer />
-          <Toaster />
+          <Toaster className="bottom-9 sm:right-6" />
         </AuthProvider>
       </body>
     </html>
