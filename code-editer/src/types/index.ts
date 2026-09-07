@@ -54,13 +54,5 @@ export interface CodeEditorState {
   runCode: () => Promise<void>;
 }
 
-export interface Snippet {
-  id: string;
-  userId: string;
-  userName: string;
-  title: string;
-  language: string;
-  code: string;
-  createdAt: string;
-  updatedAt: string;
-}
+export * from "./snippet";
+

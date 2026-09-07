@@ -16,12 +16,27 @@ function CopyButton({ code }: { code: string }) {
     <button
       onClick={copyToClipboard}
       type="button"
-      className="p-2 hover:bg-white/10 rounded-lg transition-all duration-200 group relative"
+      className={`
+        group relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
+        transition-all duration-200 border active:scale-95 select-none
+        ${
+          copied
+            ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+            : "bg-white/4 border-white/8 text-slate-400 hover:bg-white/8 hover:border-white/15 hover:text-slate-200"
+        }
+      `}
+      title="Copy code to clipboard"
     >
       {copied ? (
-        <Check className="size-4 text-green-400" />
+        <>
+          <Check className="w-3.5 h-3.5 text-emerald-400 animate-in zoom-in-50 duration-200" />
+          <span>Copied!</span>
+        </>
       ) : (
-        <Copy className=" size-4 text-gray-400 group-hover:text-gray-300" />
+        <>
+          <Copy className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-200 transition-colors" />
+          <span>Copy</span>
+        </>
       )}
     </button>
   );

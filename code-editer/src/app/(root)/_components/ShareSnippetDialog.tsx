@@ -1,10 +1,9 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useCodeEditorStore } from "@/app/store/useCodeEditorStore";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -14,16 +13,11 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useCodeEditorStore } from "@/app/store/useCodeEditorStore";
 import { toast } from "@/components/ui/toast";
-import {
-  Code2,
-  FileCode,
-  Loader2,
-  Share2,
-  Sparkles,
-  Terminal,
-} from "lucide-react";
+import { FileCode, Loader2, Share2, Sparkles, Terminal } from "lucide-react";
+import { useForm } from "react-hook-form";
+
+import { useCreateSnippet } from "@/features/snippets/hooks/use-create-snippet";
 
 interface ShareSnippetDialogProps {
   open?: boolean;
@@ -43,6 +37,8 @@ export default function ShareSnippetDialog({
   const lineCount = currentCode ? currentCode.split("\n").length : 0;
   const charCount = currentCode ? currentCode.length : 0;
 
+  const createSnippetMutation = useCreateSnippet();
+
   const {
     register,
     handleSubmit,
@@ -54,55 +50,33 @@ export default function ShareSnippetDialog({
     },
   });
 
+  const isPending = isSubmitting || createSnippetMutation.isPending;
+
   const handleShare = async (data: FormData) => {
-    try {
-      const code = getCode();
+    const code = getCode();
 
-      if (!code.trim()) {
-        toast.add({
-          title: "Error",
-          description: "Code cannot be empty",
-          type: "error",
-        });
-        return;
-      }
-
-      const response = await fetch("/api/snippets", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: data.title.trim(),
-          language,
-          code,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to share snippet");
-      }
-
-      toast.add({
-        title: "Snippet Published!",
-        description: "Your code snippet has been shared with the community.",
-        type: "success",
-      });
-
-      reset();
-      onClose();
-    } catch (error) {
-      console.error("Error creating snippet:", error);
-
+    if (!code.trim()) {
       toast.add({
         title: "Error",
-        description:
-          error instanceof Error ? error.message : "Error creating snippet",
+        description: "Code cannot be empty",
         type: "error",
       });
+      return;
     }
+
+    createSnippetMutation.mutate(
+      {
+        title: data.title.trim(),
+        language,
+        code,
+      },
+      {
+        onSuccess: () => {
+          reset();
+          onClose();
+        },
+      },
+    );
   };
 
   const handleOpenChange = (isOpen: boolean) => {
@@ -212,10 +186,10 @@ export default function ShareSnippetDialog({
 
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isPending}
               className="px-5 py-2 bg-linear-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold rounded-xl text-xs shadow-lg shadow-blue-600/25 transition-all cursor-pointer disabled:opacity-50 flex items-center gap-2"
             >
-              {isSubmitting ? (
+              {isPending ? (
                 <>
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   <span>Publishing...</span>

@@ -126,8 +126,13 @@ export async function POST(
         },
       });
 
+      const updatedCount = await prisma.star.count({
+        where: { snippetId },
+      });
+
       return NextResponse.json({
         starred: false,
+        count: updatedCount,
       });
     }
 
@@ -138,8 +143,13 @@ export async function POST(
       },
     });
 
+    const updatedCount = await prisma.star.count({
+      where: { snippetId },
+    });
+
     return NextResponse.json({
       starred: true,
+      count: updatedCount,
     });
   } catch (error) {
     console.error("TOGGLE star error:", error);

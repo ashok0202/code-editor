@@ -1,15 +1,9 @@
 import type { Metadata } from "next";
-import {
-  ClerkProvider,
-  Show,
-  SignInButton,
-  SignUpButton,
-  UserButton,
-} from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/Footer";
 import AuthProvider from "@/components/providers/AuthProvider";
+import { QueryProvider } from "@/components/providers/query-provider";
 import { Toaster } from "@/components/ui/toast";
 
 const geistSans = Geist({
@@ -37,12 +31,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-linear-to-b from-gray-900 to-gray-950 text-gray-100 flex flex-col`}
       >
-        <AuthProvider>
-          {children}
-
-          <Footer />
-          <Toaster className="bottom-9 sm:right-6" />
-        </AuthProvider>
+        <QueryProvider>
+          <AuthProvider>
+            {children}
+            <Footer />
+            <Toaster className="bottom-9 sm:right-6" />
+          </AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );

@@ -11,6 +11,8 @@ import { toast } from "@/components/ui/toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
+import { useDeleteSnippet } from "@/features/snippets/hooks/use-delete-snippet";
+
 const getLanguageLogo = (lang: string) => {
   if (!lang) return "/javascript.png";
   const lower = lang.toLowerCase().trim();
@@ -23,8 +25,8 @@ const getLanguageLogo = (lang: string) => {
 
 function SnippetCard({ snippet }: { snippet: Snippet }) {
   const { data: session } = useSession();
-  const [isDeleting, setIsDeleting] = useState(false);
   const [hasCopied, setHasCopied] = useState(false);
+  const deleteSnippetMutation = useDeleteSnippet();
 
   const lineCount = snippet.code ? snippet.code.split("\n").length : 0;
 
@@ -49,39 +51,8 @@ function SnippetCard({ snippet }: { snippet: Snippet }) {
     }
   };
 
-  const handleDelete = async () => {
-    try {
-      setIsDeleting(true);
-
-      const response = await fetch(`/api/snippets/${snippet.id}`, {
-        method: "DELETE",
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to delete snippet");
-      }
-
-      toast.add({
-        title: "Success",
-        description: "Snippet deleted successfully",
-        type: "success",
-      });
-
-      // Refresh page to sync list
-      window.location.reload();
-    } catch (error) {
-      console.error("Error deleting snippet:", error);
-
-      toast.add({
-        title: "Error",
-        description: "Failed to delete snippet",
-        type: "error",
-      });
-    } finally {
-      setIsDeleting(false);
-    }
+  const handleDelete = () => {
+    deleteSnippetMutation.mutate(snippet.id);
   };
 
   return (
@@ -165,11 +136,11 @@ function SnippetCard({ snippet }: { snippet: Snippet }) {
                       e.stopPropagation();
                       handleDelete();
                     }}
-                    disabled={isDeleting}
+                    disabled={deleteSnippetMutation.isPending}
                     className="rounded-lg cursor-pointer"
                     title="Delete Snippet"
                   >
-                    {isDeleting ? (
+                    {deleteSnippetMutation.isPending ? (
                       <div className="w-3.5 h-3.5 border-2 border-red-400/30 border-t-red-400 rounded-full animate-spin" />
                     ) : (
                       <Trash2 className="w-3.5 h-3.5" />

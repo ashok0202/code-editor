@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, Code, Filter, Grid, Layers, Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import SnippetCard from "./_components/SnippetCard";
+import { useSnippets } from "@/features/snippets/hooks/use-snippets";
 
 interface SnippetsClientProps {
   initialSnippets: Snippet[];
@@ -13,7 +14,7 @@ interface SnippetsClientProps {
 export default function SnippetsClient({
   initialSnippets,
 }: SnippetsClientProps) {
-  const [snippets, setSnippets] = useState<Snippet[]>(initialSnippets);
+  const { data: snippets = initialSnippets } = useSnippets(initialSnippets);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
   const [view, setView] = useState<"grid" | "list">("grid");

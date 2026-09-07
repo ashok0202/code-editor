@@ -1,10 +1,9 @@
-
 import { getAuthsession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getUserStats } from "@/app/actions/codeExecutions";
-import ProfileHeader from "./_components/profileHeader";
-import ProfileContent from "./_components/ProfileContent";
+import ProfileClient from "./_components/ProfileClient";
+import { UserProfileResponse } from "@/types/profile";
 
 export default async function ProfilePage() {
   const session = await getAuthsession();
@@ -52,8 +51,8 @@ export default async function ProfilePage() {
     },
   });
 
-  // Fetch executions (limit to last 50 for display)
-  const executions = await prisma.codeExecution.findMany({
+  // Fetch executions (limit 50)
+  const executionsRaw = await prisma.codeExecution.findMany({
     where: { userId: session.user.id },
     orderBy: {
       createdAt: "desc",
@@ -61,20 +60,20 @@ export default async function ProfilePage() {
     take: 50,
   });
 
-  // Format snippet items to fit the component interfaces
-  const initialMySnippets = mySnippetsRaw.map((snippet) => ({
+  const mySnippets = mySnippetsRaw.map((snippet) => ({
     id: snippet.id,
     userId: snippet.userId,
     title: snippet.title,
     language: snippet.language,
     code: snippet.code,
     userName: snippet.userName,
-    createdAt: snippet.createdAt,
+    createdAt: snippet.createdAt.toISOString(),
+    updatedAt: snippet.updatedAt.toISOString(),
     comments: snippet.comments,
     stars: snippet.stars,
   }));
 
-  const initialStarredSnippets = starredSnippetsRaw
+  const starredSnippets = starredSnippetsRaw
     .map((star) => star.snippet)
     .filter(Boolean)
     .map((snippet) => ({
@@ -84,36 +83,37 @@ export default async function ProfilePage() {
       language: snippet.language,
       code: snippet.code,
       userName: snippet.userName,
-      createdAt: snippet.createdAt,
+      createdAt: snippet.createdAt.toISOString(),
+      updatedAt: snippet.updatedAt.toISOString(),
       comments: snippet.comments,
       stars: snippet.stars,
     }));
 
-  return (
-    <div className="min-h-screen bg-[#09090b] text-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto space-y-8">
-        <ProfileHeader
-          userStats={userStats}
-          userData={{
-            id: userData.id,
-            createdAt: userData.createdAt,
-            proSince: userData.proSince,
-            name: userData.name,
-            email: userData.email,
-            isPro: userData.isPro,
-          }}
-          user={{
-            image: session.user.image,
-          }}
-          starredSnippets={initialStarredSnippets}
-        />
+  const executions = executionsRaw.map((exec) => ({
+    id: exec.id,
+    userId: exec.userId,
+    language: exec.language,
+    code: exec.code,
+    output: exec.output,
+    error: exec.error,
+    createdAt: exec.createdAt.toISOString(),
+  }));
 
-        <ProfileContent
-          initialMySnippets={initialMySnippets}
-          initialStarredSnippets={initialStarredSnippets}
-          executions={executions}
-        />
-      </div>
-    </div>
-  );
+  const initialProfile: UserProfileResponse = {
+    userData: {
+      id: userData.id,
+      name: userData.name,
+      email: userData.email,
+      image: session.user.image || null,
+      isPro: userData.isPro,
+      proSince: userData.proSince,
+      createdAt: userData.createdAt.toISOString(),
+    },
+    userStats,
+    mySnippets,
+    starredSnippets,
+    executions,
+  };
+
+  return <ProfileClient initialProfile={initialProfile} />;
 }

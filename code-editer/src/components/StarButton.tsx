@@ -2,8 +2,9 @@
 
 import { useSession } from "next-auth/react";
 import { Star } from "lucide-react";
-import { useEffect, useState } from "react";
 import { toast } from "./ui/toast";
+import { useSnippetStar } from "@/features/snippets/hooks/use-snippet-star";
+import { useToggleSnippetStar } from "@/features/snippets/hooks/use-toggle-star";
 
 interface StarButtonProps {
   snippetId: string;
@@ -11,41 +12,14 @@ interface StarButtonProps {
 
 function StarButton({ snippetId }: StarButtonProps) {
   const { data: session } = useSession();
+  const { data: starInfo, isLoading } = useSnippetStar(snippetId);
+  const toggleStarMutation = useToggleSnippetStar(snippetId);
 
-  const [isStarred, setIsStarred] = useState(false);
-  const [starCount, setStarCount] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isUpdating, setIsUpdating] = useState(false);
+  const isStarred = starInfo?.starred ?? false;
+  const starCount = starInfo?.count ?? 0;
+  const isUpdating = toggleStarMutation.isPending;
 
-  const fetchStarInfo = async () => {
-    try {
-      setIsLoading(true);
-
-      const response = await fetch(`/api/snippets/${snippetId}/star`, {
-        method: "GET",
-        cache: "no-store",
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to fetch star information");
-      }
-
-      setIsStarred(result.starred);
-      setStarCount(result.count);
-    } catch (error) {
-      console.error("Error fetching star info:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchStarInfo();
-  }, [snippetId]);
-
-  const handleStar = async (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleStar = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     event.stopPropagation();
 
@@ -60,35 +34,7 @@ function StarButton({ snippetId }: StarButtonProps) {
 
     if (isUpdating) return;
 
-    try {
-      setIsUpdating(true);
-
-      const response = await fetch(`/api/snippets/${snippetId}/star`, {
-        method: "POST",
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to update star");
-      }
-
-      setIsStarred(result.starred);
-
-      setStarCount((prev) =>
-        result.starred ? prev + 1 : Math.max(prev - 1, 0),
-      );
-    } catch (error) {
-      console.error("Error updating star:", error);
-      toast.add({
-        title: "Error",
-        description:
-          error instanceof Error ? error.message : "Failed to update star",
-        type: "error",
-      });
-    } finally {
-      setIsUpdating(false);
-    }
+    toggleStarMutation.mutate();
   };
 
   return (
@@ -97,39 +43,35 @@ function StarButton({ snippetId }: StarButtonProps) {
       disabled={isLoading || isUpdating}
       onClick={handleStar}
       className={`
-        group
-        flex items-center gap-1.5
-        px-3 py-1.5
-        rounded-lg
-        transition-all duration-200
-
+        group relative inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium
+        transition-all duration-200 ease-out select-none
+        border shadow-sm active:scale-95
         ${
           isStarred
-            ? "bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20"
-            : "bg-gray-500/10 text-gray-400 hover:bg-gray-500/20"
+            ? "bg-amber-500/10 border-amber-500/30 text-amber-400 hover:bg-amber-500/20 hover:border-amber-500/40 shadow-amber-500/5"
+            : "bg-white/4 border-white/8 text-slate-400 hover:bg-white/8 hover:border-white/15 hover:text-slate-200"
         }
-
-        ${isUpdating ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}
+        ${isUpdating ? "opacity-70 cursor-wait" : "cursor-pointer"}
       `}
     >
       <Star
         className={`
-          w-4 h-4
-          transition-all
+          w-4 h-4 transition-transform duration-300 ease-spring
           ${
             isStarred
-              ? "fill-yellow-500 text-yellow-500"
-              : "fill-none group-hover:fill-gray-400"
+              ? "fill-amber-400 text-amber-400 scale-110 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]"
+              : "fill-none text-slate-400 group-hover:text-amber-400 group-hover:scale-110"
           }
+          ${isUpdating ? "animate-pulse" : ""}
         `}
       />
 
-      <span
-        className={`text-xs font-medium ${
-          isStarred ? "text-yellow-500" : "text-gray-400"
-        }`}
-      >
-        {isLoading ? "..." : starCount}
+      <span className="font-mono text-xs font-semibold tracking-wide">
+        {isLoading ? (
+          <span className="inline-block w-4 h-3 bg-white/10 animate-pulse rounded" />
+        ) : (
+          starCount
+        )}
       </span>
     </button>
   );
