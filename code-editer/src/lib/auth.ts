@@ -2,13 +2,19 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { getServerSession, type NextAuthOptions } from "next-auth";
+import { redirect } from "next/navigation";
 import { prisma } from "./prisma";
 import bcryptjs from "bcryptjs";
+
+// Session duration configuration (24 hours)
+const SESSION_MAX_AGE = 24 * 60 * 60; // 24 hours in seconds
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt" as const,
+    maxAge: SESSION_MAX_AGE,
+    updateAge: 60 * 60, // Refresh session token age every hour
   },
   pages: {
     signIn: "/sign-in",
@@ -85,12 +91,15 @@ export const authOptions: NextAuthOptions = {
           token.username = dbUser.username;
           token.image = dbUser.image;
           token.role = dbUser.role;
+        } else {
+          // User was deleted or deactivated - invalidate token
+          return {} as any;
         }
       }
       return token;
     },
     async session({ session, token }) {
-      if (token) {
+      if (token && token.id) {
         session.user.id = token.id;
         session.user.name = token.name;
         session.user.email = token.email;
@@ -109,3 +118,27 @@ export const authOptions: NextAuthOptions = {
 };
 
 export const getAuthsession = () => getServerSession(authOptions);
+export const getAuthSession = getAuthsession;
+
+/**
+ * Checks if a session object is expired.
+ */
+export const isSessionExpired = (session: { expires?: string } | null | undefined): boolean => {
+  if (!session || !session.expires) return true;
+  return new Date(session.expires) < new Date();
+};
+
+/**
+ * Gets the current server session.
+ * If session is not present or session time has expired, automatically redirects to the sign-in/login page.
+ */
+export const requireAuthSession = async (redirectTo: string = authOptions.pages?.signIn || "/sign-in") => {
+  const session = await getAuthsession();
+
+  if (!session || !session.user || isSessionExpired(session)) {
+    redirect(redirectTo);
+  }
+
+  return session;
+};
+

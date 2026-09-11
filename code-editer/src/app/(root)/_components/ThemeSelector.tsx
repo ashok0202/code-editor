@@ -40,18 +40,19 @@ const ThemeSelector: React.FC = () => {
   return (
     <div className="relative" ref={dropdownRef}>
       <motion.button
+        title={`Theme: ${currentTheme?.label || "Select Theme"}`}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-48 group relative flex items-center gap-2 px-4 py-2.5 bg-[#1e1e2e]/80 hover:bg-[#262637] 
+        className="w-auto sm:w-44 group relative flex items-center gap-2 px-2.5 sm:px-4 py-2 sm:py-2.5 bg-[#1e1e2e]/80 hover:bg-[#262637] 
         rounded-lg transition-all duration-200 border border-gray-800/50 hover:border-gray-700"
       >
         {/* hover state bg decorator */}
         <div className="absolute inset-0 bg-linear-to-r from-blue-500/5 to-purple-500/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity" />
 
-        <Palette className="w-4 h-4 text-gray-400 group-hover:text-gray-300 transition-colors" />
+        <Palette className="w-4 h-4 text-gray-400 group-hover:text-gray-300 transition-colors shrink-0" />
 
-        <span className="text-gray-300 min-w-20 text-left group-hover:text-white transition-colors">
+        <span className="text-gray-300 min-w-16 text-left group-hover:text-white transition-colors text-xs sm:text-sm hidden sm:inline-block">
           {currentTheme?.label}
         </span>
 

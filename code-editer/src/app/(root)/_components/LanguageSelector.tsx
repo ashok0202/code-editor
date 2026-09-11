@@ -6,7 +6,9 @@ import { ChevronDownIcon, Lock, Sparkles } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { LANGUAGE_CONFIG } from "../_constants";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import Image from "next/image";
+
 
 const LanguageSelector: React.FC<{ hasAccess: boolean }> = ({ hasAccess }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -42,10 +44,11 @@ const LanguageSelector: React.FC<{ hasAccess: boolean }> = ({ hasAccess }) => {
   return (
     <div className="relative" ref={dropdownRef}>
       <motion.button
+        title={`Language: ${currentLanguageObj.label}`}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={() => setIsOpen(!isOpen)}
-        className={`group relative flex items-center gap-3 px-4 py-2.5 bg-[#1e1e2e]/80 
+        className={`group relative flex items-center gap-2 sm:gap-3 px-2.5 sm:px-4 py-2 sm:py-2.5 bg-[#1e1e2e]/80 
       rounded-lg transition-all 
        duration-200 border border-gray-800/50 hover:border-gray-700
        ${!hasAccess && language !== "javascript" ? "opacity-50 cursor-not-allowed" : ""}`}
@@ -57,7 +60,7 @@ const LanguageSelector: React.FC<{ hasAccess: boolean }> = ({ hasAccess }) => {
           aria-hidden="true"
         />
 
-        <div className="size-6 rounded-md bg-gray-800/50 p-0.5 group-hover:scale-110 transition-transform">
+        <div className="size-5 sm:size-6 rounded-md bg-gray-800/50 p-0.5 group-hover:scale-110 transition-transform shrink-0">
           <Image
             src={currentLanguageObj.logoPath}
             alt="programming language logo"
@@ -67,7 +70,7 @@ const LanguageSelector: React.FC<{ hasAccess: boolean }> = ({ hasAccess }) => {
           />
         </div>
 
-        <span className="text-gray-200 min-w-20 text-left group-hover:text-white transition-colors">
+        <span className="text-gray-200 min-w-16 text-left group-hover:text-white transition-colors text-xs sm:text-sm hidden sm:inline-block">
           {currentLanguageObj.label}
         </span>
 
@@ -93,7 +96,7 @@ const LanguageSelector: React.FC<{ hasAccess: boolean }> = ({ hasAccess }) => {
               </p>
             </div>
 
-            <div className="max-h-70 overflow-y-auto overflow-x-hidden custom-scrollbar">
+            <ScrollArea className="h-70 pr-1">
               {Object.values(LANGUAGE_CONFIG).map((lang, index) => {
                 const isLocked = !hasAccess && lang.id !== "javascript";
 
@@ -118,35 +121,34 @@ const LanguageSelector: React.FC<{ hasAccess: boolean }> = ({ hasAccess }) => {
                       {/* decorator */}
                       <div
                         className="absolute inset-0 bg-linear-to-r from-blue-500/5 to-purple-500/5 rounded-lg 
-                      opacity-0 group-hover:opacity-100 transition-opacity"
+                        opacity-0 group-hover:opacity-100 transition-opacity"
                       />
 
+                      {/* icon */}
                       <div
                         className={`
-                         relative size-8 rounded-lg p-1.5 group-hover:scale-110 transition-transform
-                         ${language === lang.id ? "bg-blue-500/10" : "bg-gray-800/50"}
-                       `}
+                        relative sm:w-8 sm:h-8 w-6 h-6 rounded-lg p-1.5 flex items-center justify-center
+                        ${language === lang.id ? "bg-blue-500/10" : "bg-gray-800/50"}
+                        group-hover:scale-110 transition-transform duration-200
+                      `}
                       >
-                        <div
-                          className="absolute inset-0 bg-linear-to-br from-blue-500/10 to-purple-500/10 rounded-lg 
-                        opacity-0 group-hover:opacity-100 transition-opacity"
-                        />
                         <Image
-                          width={24}
-                          height={24}
                           src={lang.logoPath}
                           alt={`${lang.label} logo`}
-                          className="w-full h-full object-contain relative z-10"
+                          width={24}
+                          height={24}
+                          className="w-full h-full object-contain"
                         />
                       </div>
 
-                      <span className="flex-1 text-left group-hover:text-white transition-colors">
+                      <span className="flex-1 text-left font-medium sm:text-sm text-xs tracking-wide">
                         {lang.label}
                       </span>
 
-                      {/* selected language border */}
+                      {/* active state indicator */}
                       {language === lang.id && (
                         <motion.div
+                          layoutId="activeLanguage"
                           className="absolute inset-0 border-2 border-blue-500/30 rounded-lg"
                           transition={{
                             type: "spring",
@@ -167,7 +169,7 @@ const LanguageSelector: React.FC<{ hasAccess: boolean }> = ({ hasAccess }) => {
                   </motion.div>
                 );
               })}
-            </div>
+            </ScrollArea>
           </motion.div>
         )}
       </AnimatePresence>

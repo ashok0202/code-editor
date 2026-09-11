@@ -14,8 +14,12 @@ import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/toast";
-import { FileCode, Loader2, Share2, Sparkles, Terminal } from "lucide-react";
+import { FileCode, Loader2, Share2, Sparkles, Terminal, LogIn } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useForm } from "react-hook-form";
+
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 import { useCreateSnippet } from "@/features/snippets/hooks/use-create-snippet";
 
@@ -32,6 +36,8 @@ export default function ShareSnippetDialog({
   open,
   onClose,
 }: ShareSnippetDialogProps) {
+  const { data: session } = useSession();
+  const router = useRouter();
   const { language, getCode } = useCodeEditorStore();
   const currentCode = getCode();
   const lineCount = currentCode ? currentCode.split("\n").length : 0;
@@ -53,6 +59,16 @@ export default function ShareSnippetDialog({
   const isPending = isSubmitting || createSnippetMutation.isPending;
 
   const handleShare = async (data: FormData) => {
+    if (!session?.user) {
+      toast.add({
+        title: "Sign in required",
+        description: "Please sign in to share snippets.",
+        type: "error",
+      });
+      router.push("/sign-in");
+      return;
+    }
+
     const code = getCode();
 
     if (!code.trim()) {
@@ -78,6 +94,7 @@ export default function ShareSnippetDialog({
       },
     );
   };
+
 
   const handleOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
@@ -129,81 +146,117 @@ export default function ShareSnippetDialog({
 
         {/* Code Preview Box */}
         {currentCode && (
-          <div className="relative z-10 mb-5 rounded-xl border border-gray-800/80 bg-[#09090f] p-3 text-xs font-mono text-gray-300 max-h-32 overflow-y-auto">
+          <ScrollArea className="relative z-10 mb-5 rounded-xl border border-gray-800/80 bg-[#09090f] p-3 text-xs font-mono text-gray-300 h-32">
             <pre className="whitespace-pre-wrap opacity-85">
               {currentCode.split("\n").slice(0, 5).join("\n")}
               {lineCount > 5 && "\n..."}
             </pre>
-          </div>
+          </ScrollArea>
         )}
 
-        {/* Form Body */}
-        <form
-          onSubmit={handleSubmit(handleShare)}
-          className="relative z-10 space-y-5"
-        >
-          <FieldGroup>
-            <Field className="space-y-2">
-              <Label
-                htmlFor="title"
-                className="text-xs font-semibold text-gray-300 flex items-center gap-1.5"
+        {/* Form Body or Unauthenticated state */}
+        {!session?.user ? (
+          <div className="relative z-10 p-6 rounded-2xl bg-[#0d0d15] border border-blue-500/20 text-center space-y-4">
+            <div className="mx-auto w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+              <LogIn className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-white">Sign In Required</h3>
+              <p className="text-xs text-gray-400 mt-1">
+                You need to be logged in to share code snippets with the community.
+              </p>
+            </div>
+            <div className="flex items-center justify-center gap-3 pt-2">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => handleOpenChange(false)}
+                className="px-4 py-2 bg-gray-800/60 hover:bg-gray-700/60 border border-gray-700/60 text-gray-300 rounded-xl text-xs font-semibold"
               >
-                <FileCode className="w-3.5 h-3.5 text-blue-400" />
-                Snippet Title
-              </Label>
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  router.push("/sign-in");
+                }}
+                className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl text-xs flex items-center gap-2"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span>Sign In Now</span>
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <form
+            onSubmit={handleSubmit(handleShare)}
+            className="relative z-10 space-y-5"
+          >
+            <FieldGroup>
+              <Field className="space-y-2">
+                <Label
+                  htmlFor="title"
+                  className="text-xs font-semibold text-gray-300 flex items-center gap-1.5"
+                >
+                  <FileCode className="w-3.5 h-3.5 text-blue-400" />
+                  Snippet Title
+                </Label>
 
-              <Input
-                id="title"
-                placeholder="e.g., Fast Binary Search Algorithm"
-                className="w-full px-4 py-2.5 bg-[#161625] border border-gray-800 focus:ring-2 focus:ring-blue-500/20 text-white rounded-xl text-sm transition-all outline-none"
-                {...register("title", {
-                  required: "Title is required",
-                  minLength: {
-                    value: 3,
-                    message: "Title must be at least 3 characters",
-                  },
-                })}
-              />
+                <Input
+                  id="title"
+                  placeholder="e.g., Fast Binary Search Algorithm"
+                  className="w-full px-4 py-2.5 bg-[#161625] border border-gray-800 focus:ring-2 focus:ring-blue-500/20 text-white rounded-xl text-sm transition-all outline-none"
+                  {...register("title", {
+                    required: "Title is required",
+                    minLength: {
+                      value: 3,
+                      message: "Title must be at least 3 characters",
+                    },
+                  })}
+                />
 
-              {errors.title && (
-                <p className="text-xs font-medium text-red-400 flex items-center gap-1 pt-1">
-                  {errors.title.message}
-                </p>
-              )}
-            </Field>
-          </FieldGroup>
+                {errors.title && (
+                  <p className="text-xs font-medium text-red-400 flex items-center gap-1 pt-1">
+                    {errors.title.message}
+                  </p>
+                )}
+              </Field>
+            </FieldGroup>
 
-          {/* Footer Actions */}
-          <DialogFooter className="flex items-center justify-end gap-3 pt-3 border-t border-gray-800/60">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => handleOpenChange(false)}
-              className="px-4 py-2 bg-gray-800/60 hover:bg-gray-700/60 border border-gray-700/60 text-gray-300 rounded-xl text-xs font-semibold transition-all cursor-pointer"
-            >
-              Cancel
-            </Button>
+            {/* Footer Actions */}
+            <DialogFooter className="flex items-center justify-end gap-3 pt-3 border-t border-gray-800/60">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => handleOpenChange(false)}
+                className="px-4 py-2 bg-gray-800/60 hover:bg-gray-700/60 border border-gray-700/60 text-gray-300 rounded-xl text-xs font-semibold transition-all cursor-pointer"
+              >
+                Cancel
+              </Button>
 
-            <Button
-              type="submit"
-              disabled={isPending}
-              className="px-5 py-2 bg-linear-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold rounded-xl text-xs shadow-lg shadow-blue-600/25 transition-all cursor-pointer disabled:opacity-50 flex items-center gap-2"
-            >
-              {isPending ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  <span>Publishing...</span>
-                </>
-              ) : (
-                <>
-                  <Share2 className="w-3.5 h-3.5" />
-                  <span>Share Snippet</span>
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </form>
+              <Button
+                type="submit"
+                disabled={isPending}
+                className="px-5 py-2 bg-linear-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold rounded-xl text-xs shadow-lg shadow-blue-600/25 transition-all cursor-pointer disabled:opacity-50 flex items-center gap-2"
+              >
+                {isPending ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Publishing...</span>
+                  </>
+                ) : (
+                  <>
+                    <Share2 className="w-3.5 h-3.5" />
+                    <span>Share Snippet</span>
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   );
 }
+

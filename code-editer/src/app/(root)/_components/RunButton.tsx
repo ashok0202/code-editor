@@ -27,12 +27,13 @@ const RunButton: React.FC = () => {
 
   return (
     <motion.button
+      title={isRunning ? "Executing..." : "Run Code"}
       onClick={handleRun}
       disabled={isRunning}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       className={`
-        group relative inline-flex items-center gap-2.5 px-5 py-2.5
+        group relative inline-flex items-center gap-2 sm:gap-2.5 px-3 sm:px-5 py-2 sm:py-2.5
         disabled:cursor-not-allowed
         focus:outline-none
       `}
@@ -47,7 +48,7 @@ const RunButton: React.FC = () => {
               <Loader2 className="w-4 h-4 animate-spin text-white/70" />
               <div className="absolute inset-0 blur animate-pulse" />
             </div>
-            <span className="text-sm font-medium text-white/90">
+            <span className="text-xs sm:text-sm font-medium text-white/90 hidden sm:inline">
               Executing...
             </span>
           </>
@@ -56,7 +57,7 @@ const RunButton: React.FC = () => {
             <div className="relative flex items-center justify-center w-4 h-4">
               <Play className="w-4 h-4 text-white/90 transition-transform group-hover:scale-110 group-hover:text-white" />
             </div>
-            <span className="text-sm font-medium text-white/90 group-hover:text-white">
+            <span className="text-xs sm:text-sm font-medium text-white/90 group-hover:text-white hidden sm:inline">
               Run Code
             </span>
           </>

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0a14" />
+      <stop offset="50%" stop-color="#121226" />
+      <stop offset="100%" stop-color="#070710" />
+    </linearGradient>
+
+    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.8" />
+      <stop offset="50%" stop-color="#818cf8" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#c084fc" stop-opacity="0.8" />
+    </linearGradient>
+
+    <linearGradient id="leftBracket" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#3b82f6" />
+    </linearGradient>
+
+    <linearGradient id="rightBracket" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7" />
+      <stop offset="100%" stop-color="#ec4899" />
+    </linearGradient>
+
+    <linearGradient id="slashGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f43f5e" />
+      <stop offset="100%" stop-color="#fb923c" />
+    </linearGradient>
+
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="16" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <rect x="24" y="24" width="464" height="464" rx="112" fill="url(#bgGrad)" stroke="url(#borderGrad)" stroke-width="12" />
+
+  <circle cx="256" cy="256" r="180" fill="none" stroke="#38bdf8" stroke-width="4" stroke-opacity="0.15" />
+
+  <g filter="url(#glow)">
+    <path d="M 190 160 L 110 256 L 190 352" fill="none" stroke="url(#leftBracket)" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 322 160 L 402 256 L 322 352" fill="none" stroke="url(#rightBracket)" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 285 140 L 227 372" fill="none" stroke="url(#slashGrad)" stroke-width="32" stroke-linecap="round" />
+  </g>
+
+  <path d="M 256 90 L 262 110 L 282 116 L 262 122 L 256 142 L 250 122 L 230 116 L 250 110 Z" fill="#38bdf8" opacity="0.9" />
+</svg>

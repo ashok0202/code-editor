@@ -1,14 +1,35 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { getToken } from "next-auth/jwt";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export default clerkMiddleware();
+export async function proxy(req: NextRequest) {
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  const { pathname } = req.nextUrl;
+
+  // Protected routes requiring authentication
+  const protectedRoutes = ["/profile"];
+
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
+
+  if (isProtectedRoute && !token) {
+    const signInUrl = new URL("/sign-in", req.url);
+    signInUrl.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(signInUrl);
+  }
+
+  // Redirect authenticated user away from sign-in page to home
+  if (token && pathname.startsWith("/sign-in")) {
+    return NextResponse.redirect(new URL("/", req.url));
+  }
+
+  return NextResponse.next();
+}
+
+export default proxy;
 
 export const config = {
-  matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for Clerk's auto-proxy path
-    "/__clerk/:path*",
-    // Always run for API routes
-    "/(api|trpc)(.*)",
-  ],
+  matcher: ["/profile/:path*", "/sign-in"],
 };
+

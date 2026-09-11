@@ -13,7 +13,10 @@ export interface ExecutionItem {
   createdAt: Date | string;
 }
 
+import { ScrollArea } from "@/components/ui/scroll-area";
+
 interface ExecutionCardProps {
+
   exec: ExecutionItem;
 }
 
@@ -66,7 +69,7 @@ export default function ExecutionCard({ exec }: ExecutionCardProps) {
 
         {/* Output Console Box */}
         {(exec.output || exec.error) && (
-          <div className="p-4 bg-[#09090f] border border-gray-800/80 rounded-xl text-xs font-mono max-h-40 overflow-y-auto">
+          <ScrollArea className="p-4 bg-[#09090f] border border-gray-800/80 rounded-xl text-xs font-mono h-40">
             <div className="text-[11px] font-sans font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
               {exec.error
                 ? "Execution Error Console"
@@ -81,7 +84,7 @@ export default function ExecutionCard({ exec }: ExecutionCardProps) {
                 {exec.output}
               </pre>
             )}
-          </div>
+          </ScrollArea>
         )}
       </CardContent>
     </Card>

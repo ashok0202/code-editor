@@ -1,4 +1,4 @@
-import { getAuthsession } from "@/lib/auth";
+import { requireAuthSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getUserStats } from "@/app/actions/codeExecutions";
@@ -6,10 +6,8 @@ import ProfileClient from "./_components/ProfileClient";
 import { UserProfileResponse } from "@/types/profile";
 
 export default async function ProfilePage() {
-  const session = await getAuthsession();
-  if (!session || !session.user) {
-    redirect("/sign-in");
-  }
+  const session = await requireAuthSession();
+
 
   // Fetch full user data from DB
   const userData = await prisma.user.findUnique({
