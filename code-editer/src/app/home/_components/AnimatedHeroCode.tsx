@@ -27,16 +27,31 @@ const CODE_EXAMPLES: Record<
     language: "JavaScript",
     filename: "two_sum.js",
     lines: [
-      { text: "// Two Sum Algorithm (O(N) Hash Map)", color: "text-slate-500 italic" },
-      { text: "function twoSum(nums, target) {", color: "text-purple-400 font-semibold" },
+      {
+        text: "// Two Sum Algorithm (O(N) Hash Map)",
+        color: "text-slate-500 italic",
+      },
+      {
+        text: "function twoSum(nums, target) {",
+        color: "text-purple-400 font-semibold",
+      },
       { text: "  const seen = new Map();", color: "text-blue-300" },
-      { text: "  for (let i = 0; i < nums.length; i++) {", color: "text-slate-200" },
+      {
+        text: "  for (let i = 0; i < nums.length; i++) {",
+        color: "text-slate-200",
+      },
       { text: "    const diff = target - nums[i];", color: "text-slate-300" },
-      { text: "    if (seen.has(diff)) return [seen.get(diff), i];", color: "text-cyan-300 font-medium" },
+      {
+        text: "    if (seen.has(diff)) return [seen.get(diff), i];",
+        color: "text-cyan-300 font-medium",
+      },
       { text: "    seen.set(nums[i], i);", color: "text-slate-300" },
       { text: "  }", color: "text-purple-400" },
       { text: "}", color: "text-purple-400" },
-      { text: "console.log(twoSum([2, 7, 11, 15], 9));", color: "text-amber-300" },
+      {
+        text: "console.log(twoSum([2, 7, 11, 15], 9));",
+        color: "text-amber-300",
+      },
     ],
     output: ["[0, 1]", "Target 9 matched (2 + 7 = 9)"],
     executionTime: "0.05s",
@@ -46,12 +61,21 @@ const CODE_EXAMPLES: Record<
     filename: "reverse.py",
     lines: [
       { text: "# String Reversal Utility", color: "text-slate-500 italic" },
-      { text: "def reverse_string(s: str) -> str:", color: "text-blue-400 font-semibold" },
+      {
+        text: "def reverse_string(s: str) -> str:",
+        color: "text-blue-400 font-semibold",
+      },
       { text: "    chars = list(s)", color: "text-slate-200" },
       { text: "    left, right = 0, len(chars) - 1", color: "text-purple-300" },
       { text: "    while left < right:", color: "text-purple-400" },
-      { text: "        chars[left], chars[right] = chars[right], chars[left]", color: "text-slate-300" },
-      { text: "        left, right = left + 1, right - 1", color: "text-slate-300" },
+      {
+        text: "        chars[left], chars[right] = chars[right], chars[left]",
+        color: "text-slate-300",
+      },
+      {
+        text: "        left, right = left + 1, right - 1",
+        color: "text-slate-300",
+      },
       { text: "    return ''.join(chars)", color: "text-cyan-300 font-medium" },
       { text: "print(reverse_string('codecraft'))", color: "text-amber-300" },
     ],
@@ -62,10 +86,16 @@ const CODE_EXAMPLES: Record<
     language: "C++",
     filename: "pow.cpp",
     lines: [
-      { text: "// Fast Exponentiation (O(log N))", color: "text-slate-500 italic" },
+      {
+        text: "// Fast Exponentiation (O(log N))",
+        color: "text-slate-500 italic",
+      },
       { text: "#include <iostream>", color: "text-pink-400" },
       { text: "using namespace std;", color: "text-slate-300" },
-      { text: "long long fastPow(long long b, int e) {", color: "text-purple-400 font-semibold" },
+      {
+        text: "long long fastPow(long long b, int e) {",
+        color: "text-purple-400 font-semibold",
+      },
       { text: "    long long res = 1;", color: "text-slate-200" },
       { text: "    while (e > 0) {", color: "text-purple-400" },
       { text: "        if (e & 1) res *= b;", color: "text-cyan-300" },
@@ -73,7 +103,10 @@ const CODE_EXAMPLES: Record<
       { text: "    }", color: "text-purple-400" },
       { text: "    return res;", color: "text-cyan-300" },
       { text: "}", color: "text-purple-400" },
-      { text: "int main() { cout << fastPow(2, 10); }", color: "text-amber-300" },
+      {
+        text: "int main() { cout << fastPow(2, 10); }",
+        color: "text-amber-300",
+      },
     ],
     output: ["1024", "2^10 calculated in 0.01s"],
     executionTime: "0.01s",
@@ -83,16 +116,34 @@ const CODE_EXAMPLES: Record<
     filename: "Palindrome.java",
     lines: [
       { text: "// Palindrome String Checker", color: "text-slate-500 italic" },
-      { text: "public class Palindrome {", color: "text-purple-400 font-semibold" },
-      { text: "    public static boolean check(String s) {", color: "text-blue-400" },
-      { text: "        int l = 0, r = s.length() - 1;", color: "text-slate-200" },
+      {
+        text: "public class Palindrome {",
+        color: "text-purple-400 font-semibold",
+      },
+      {
+        text: "    public static boolean check(String s) {",
+        color: "text-blue-400",
+      },
+      {
+        text: "        int l = 0, r = s.length() - 1;",
+        color: "text-slate-200",
+      },
       { text: "        while (l < r) {", color: "text-purple-400" },
-      { text: "            if (s.charAt(l++) != s.charAt(r--)) return false;", color: "text-cyan-300" },
+      {
+        text: "            if (s.charAt(l++) != s.charAt(r--)) return false;",
+        color: "text-cyan-300",
+      },
       { text: "        }", color: "text-purple-400" },
       { text: "        return true;", color: "text-cyan-300" },
       { text: "    }", color: "text-purple-400" },
-      { text: "    public static void main(String[] a) {", color: "text-blue-400" },
-      { text: "        System.out.println(check(\"racecar\"));", color: "text-amber-300" },
+      {
+        text: "    public static void main(String[] a) {",
+        color: "text-blue-400",
+      },
+      {
+        text: '        System.out.println(check("racecar"));',
+        color: "text-amber-300",
+      },
       { text: "    }", color: "text-purple-400" },
       { text: "}", color: "text-purple-400" },
     ],
@@ -172,7 +223,9 @@ export default function AnimatedHeroCode() {
                   setShowConsole(true);
                 }}
                 className={`relative px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  isActive ? "text-white font-semibold" : "text-slate-400 hover:text-slate-200"
+                  isActive
+                    ? "text-white font-semibold"
+                    : "text-slate-400 hover:text-slate-200"
                 }`}
               >
                 {isActive && (
@@ -272,7 +325,9 @@ export default function AnimatedHeroCode() {
                       {index + 1}
                     </span>
 
-                    <span className={`whitespace-pre ${line.color || "text-slate-200"}`}>
+                    <span
+                      className={`whitespace-pre ${line.color || "text-slate-200"}`}
+                    >
                       {line.text}
                     </span>
 
@@ -322,12 +377,17 @@ export default function AnimatedHeroCode() {
               >
                 <div className="flex items-center gap-2 text-xs text-emerald-400 font-medium">
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>Executed Successfully ({activeExample.executionTime})</span>
+                  <span>
+                    Executed Successfully ({activeExample.executionTime})
+                  </span>
                 </div>
 
                 <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 space-y-1.5 font-mono text-xs">
                   {activeExample.output.map((outLine, idx) => (
-                    <div key={idx} className="flex items-start gap-2 text-cyan-300">
+                    <div
+                      key={idx}
+                      className="flex items-start gap-2 text-cyan-300"
+                    >
                       <span className="text-slate-500 select-none">&gt;</span>
                       <span>{outLine}</span>
                     </div>
